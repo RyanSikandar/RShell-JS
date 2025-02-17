@@ -21,6 +21,7 @@ rl.on("line", (input) => {
   if (input.includes("echo")) {
     //The echo command will print the input without the echo
     console.log(input.replace("echo", "").trim());
+    rl.prompt();
   }
   console.log(`${input}: command not found`);
   rl.prompt();
