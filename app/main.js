@@ -11,7 +11,11 @@ const rl = readline.createInterface({
 rl.prompt();
 
 //using the on method to listen for the line event
-rl.on("line",(input)=>{
+rl.on("line", (input) => {
+  if (input.startsWith("exit")) {
+    rl.close();
+  }
   console.log(`${input}: command not found`);
   rl.prompt();
 })
+
