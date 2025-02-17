@@ -18,7 +18,7 @@ rl.on("line", (input) => {
     exit(0)
   }
   //Implementing the Echo command
- else if (input.includes("echo")) {
+  else if (input.includes("echo")) {
     //The echo command will print the input without the echo
     console.log(input.replace("echo", "").trim());
     rl.prompt();
