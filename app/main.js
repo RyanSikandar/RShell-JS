@@ -7,4 +7,6 @@ const rl = readline.createInterface({
 
 rl.question("$ ", (answer) => {
   rl.close();
+  //Printing invalid command for every command for now
+  console.log(`${answer}: command not found\n`);
 });
