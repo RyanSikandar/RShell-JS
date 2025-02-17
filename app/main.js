@@ -1,12 +1,15 @@
 const readline = require("readline");
 
+//We are creating an interface for the user
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
+  prompt: "$ ",
 });
 
-rl.question("$ ", (answer) => {
-  rl.close();
-  //Printing invalid command for every command for now
-  console.log(`${answer}: command not found\n`);
-});
+rl.prompt();
+
+rl.on("line",(input)=>{
+  console.log(`${input}: command not found`);
+  rl.prompt();
+})
