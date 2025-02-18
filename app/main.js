@@ -11,8 +11,22 @@ const rl = readline.createInterface({
 //using prompt to display the prompt message
 rl.prompt();
 
+const checkType = (input) => {
+  const type = input.split(" ")[1];
+  if (type === 'echo' | 'exit' | 'type') {
+    console.log(`${type} is a shell builtin`);
+    rl.prompt();
+  } else {
+    console.log(`${type}: not found`);
+    rl.prompt();
+  }
+}
+
 //using the on method to listen for the line event
 rl.on("line", (input) => {
+  if (input.startsWith("type")) {
+    checkType(input);
+  }
   if (input.startsWith("exit")) {
     //If the input starts with exit, the program will exit
     exit(0)
