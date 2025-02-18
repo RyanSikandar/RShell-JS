@@ -15,7 +15,7 @@ const checkType = (input) => {
   const type = input.split(" ")[1];
   if (type === 'echo' | 'exit' | 'type') {
     console.log(`${type} is a shell builtin`);
-    
+
     rl.prompt();
   } else {
     console.log(`${type}: not found`);
@@ -27,6 +27,7 @@ const checkType = (input) => {
 rl.on("line", (input) => {
   if (input.startsWith("type")) {
     checkType(input);
+    rl.prompt();
   }
   if (input.startsWith("exit")) {
     //If the input starts with exit, the program will exit
