@@ -27,9 +27,8 @@ const checkType = (input) => {
 rl.on("line", (input) => {
   if (input.startsWith("type")) {
     checkType(input);
-    rl.prompt();
   }
-  if (input.startsWith("exit")) {
+  else if (input.startsWith("exit")) {
     //If the input starts with exit, the program will exit
     exit(0)
   }
