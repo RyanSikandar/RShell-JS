@@ -13,9 +13,8 @@ rl.prompt();
 
 const checkType = (input) => {
   const type = input.split(" ")[1];
-  if (type === 'echo' | 'exit' | 'type') {
+  if (type === 'echo' ||type=== 'exit' ||type=== 'type') {
     console.log(`${type} is a shell builtin`);
-
     rl.prompt();
   } else {
     console.log(`${type}: not found`);
