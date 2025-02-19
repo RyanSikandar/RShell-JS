@@ -30,15 +30,6 @@ function handleEcho(input) {
   console.log(myStr);
 }
 
-
-
-function parseCommand(command) {
-  const match = command.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
-  const cmd = match[0];
-  const args = match.slice(1).map(arg => arg.replace(/^"|"$/g, "")); 
-  return { cmd, args };
-}
-
 //Function to change the directory
 function changeDirectory(path) {
   try {
@@ -54,7 +45,8 @@ function changeDirectory(path) {
 
 //Function to execute the executable file (eg: ls, cat, etc)
 function executeFile(input) {
-  const { cmd: command, args } = parseCommand(input);
+  const command = input.split(/\s+/)[0];
+  const args = input.split(/\s+/).slice(1);
   const path = process.env.PATH.split(":");
   let valid = false;
 
