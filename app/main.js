@@ -1,4 +1,4 @@
-const { exit, chdir} = require("process");
+const { exit, chdir } = require("process");
 const readline = require("readline");
 const fs = require("fs");
 const { execFileSync } = require("child_process");
@@ -10,13 +10,19 @@ const rl = readline.createInterface({
   prompt: "$ ",
 });
 
+const home = process.env.HOME;
+
 //using prompt to display the prompt message
 rl.prompt();
 
 //Function to change the directory
 function changeDirectory(path) {
   try {
-    chdir(path);
+    if (path === `~`) {
+      chdir(home);
+    }
+    else { chdir(path); }
+
   } catch (err) {
     console.error(`cd: ${path}: No such file or directory`);
   }
@@ -28,7 +34,7 @@ function executeFile(input) {
   const path = process.env.PATH.split(":");
   let valid = false;
 
-  if (command==="cd"){
+  if (command === "cd") {
     changeDirectory(args[0]);
     return;
   }
