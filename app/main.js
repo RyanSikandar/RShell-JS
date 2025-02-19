@@ -11,6 +11,7 @@ const rl = readline.createInterface({
 //using prompt to display the prompt message
 rl.prompt();
 
+//Function to find the path of the executable file in the PATH
 const findPath = (type) => {
   const paths = process.env.PATH.split(":");
   let found = false;
@@ -25,9 +26,12 @@ const findPath = (type) => {
     console.log(`${type}: not found`);
   }
 }
+
+//Function to check the type of the command and print the result
+const types = ['echo', 'exit', 'type'];
 const checkType = (input) => {
   const type = input.split(" ")[1];
-  if (type === 'echo' || type === 'exit' || type === 'type') {
+  if (types.includes(type)) {
     console.log(`${type} is a shell builtin`);
     rl.prompt();
   } else {
@@ -55,7 +59,6 @@ rl.on("line", (input) => {
   else {
     console.log(`${input}: command not found`);
     rl.prompt();
-
   }
 })
 
