@@ -21,9 +21,9 @@ function handleEcho(input) {
   const value = echo.slice(1).join(" ");
   let myStr = ""
   if (value.startsWith("'") && value.endsWith("'")) {
-    myStr=value.replace(/'/g, '');
+    myStr = value.replace(/'/g, '');
   }
-  else{
+  else {
     myStr = value.split(" ").filter((word) => word !== "").join(" ");
   }
 
@@ -44,6 +44,7 @@ function changeDirectory(path) {
 }
 //Function to execute the executable file (eg: ls, cat, etc)
 function executeFile(input) {
+  
   const command = input.split(" ")[0];
   const args = input.split(" ").slice(1);
   const path = process.env.PATH.split(":");
