@@ -58,13 +58,8 @@ const types = ['echo', 'exit', 'type','pwd'];
 const checkType = (input) => {
   const type = input.split(" ")[1];
   if (types.includes(type)) {
-    if (type === 'pwd') {
-      console.log(`${process.cwd()}`);
-      rl.prompt();
-    }
-    else
-    {console.log(`${type} is a shell builtin`);
-    rl.prompt();}
+    console.log(`${type} is a shell builtin`);
+    rl.prompt();
   } else {
     findPath(type);
     rl.prompt();
@@ -75,6 +70,10 @@ const checkType = (input) => {
 rl.on("line", (input) => {
   if (input.startsWith("type")) {
     checkType(input);
+  }
+  else if (input.startsWith("pwd")) {
+    console.log(process.cwd());
+    rl.prompt();
   }
   else if (input.startsWith("exit")) {
     //If the input starts with exit, the program will exit
