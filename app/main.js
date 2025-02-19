@@ -1,6 +1,8 @@
 const { exit } = require("process");
 const readline = require("readline");
 const fs = require("fs");
+const { exec } = require("child_process");
+
 //We are creating an interface for the user
 const rl = readline.createInterface({
   input: process.stdin,
@@ -10,6 +12,24 @@ const rl = readline.createInterface({
 
 //using prompt to display the prompt message
 rl.prompt();
+
+//Function to execute the executable file 
+function executeFile(input) {
+ const command = input.split(" ")[0];
+  const args = input.split(" ").slice(1);
+  exec(`${command} ${args.join(" ")}`, (error, stdout, stderr) => {
+    if (error) {
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(stdout);
+    rl.prompt();
+  });
+}
 
 //Function to find the path of the executable file in the PATH
 const findPath = (type) => {
@@ -57,8 +77,7 @@ rl.on("line", (input) => {
     rl.prompt();
   }
   else {
-    console.log(`${input}: command not found`);
-    rl.prompt();
+    executeFile(input);
   }
 })
 
