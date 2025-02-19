@@ -13,6 +13,14 @@ const rl = readline.createInterface({
 //using prompt to display the prompt message
 rl.prompt();
 
+//Function to change the directory
+function changeDirectory(path) {
+  try {
+    chdir(path);
+  } catch (err) {
+    console.error(`cd: ${path}: No such file or directory`);
+  }
+}
 //Function to execute the executable file (eg: ls, cat, etc)
 function executeFile(input) {
   const command = input.split(" ")[0];
@@ -21,16 +29,8 @@ function executeFile(input) {
   let valid = false;
 
   if (command==="cd"){
-    const path = args[0];
-    try{
-      chdir(path);
-      valid = true;
-      return;
-    }
-    catch(err){
-      console.error(`cd: ${path}: No such file or directory`);
-      return;
-    }
+    changeDirectory(args[0]);
+    return;
   }
 
   path.forEach((path) => {
