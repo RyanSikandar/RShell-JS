@@ -1,7 +1,7 @@
 const { exit } = require("process");
 const readline = require("readline");
 const fs = require("fs");
-const { exec } = require("child_process");
+const { execFileSync } = require("child_process");
 
 //We are creating an interface for the user
 const rl = readline.createInterface({
@@ -15,19 +15,28 @@ rl.prompt();
 
 //Function to execute the executable file 
 function executeFile(input) {
- const command = input.split(" ")[0];
+  const command = input.split(" ")[0];
   const args = input.split(" ").slice(1);
-  exec(`${command} ${args.join(" ")}`, (error, stdout) => {
-    if (error) {
-      console.log(`${command}: not found`);
-      rl.prompt();
-    }else{
-      console.log(stdout);
-      rl.prompt();
+  const path = process.env.PATH.split(":");
+  let valid = false;
+
+  path.forEach((path) => {
+    const commandPath = path + "/" + command;
+    if (!valid && fs.existsSync(commandPath) && fs.statSync(commandPath).isFile()) {
+      valid = true;
+      try {
+        execFileSync(commandPath, args, { encoding: 'utf-8', stdio: 'inherit' });
+      } catch (err) {
+        console.error(`Error executing ${command}:`, err.message);
+      }
     }
-   
   });
+
+  if (!valid) {
+    console.log(`${command}: command not found`);
+  }
 }
+
 
 //Function to find the path of the executable file in the PATH
 const findPath = (type) => {
@@ -76,6 +85,7 @@ rl.on("line", (input) => {
   }
   else {
     executeFile(input);
+    rl.prompt();
   }
 })
 
