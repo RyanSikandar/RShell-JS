@@ -1,6 +1,6 @@
 const { exit } = require("process");
 const readline = require("readline");
-
+const fs = require("fs");
 //We are creating an interface for the user
 const rl = readline.createInterface({
   input: process.stdin,
@@ -11,13 +11,27 @@ const rl = readline.createInterface({
 //using prompt to display the prompt message
 rl.prompt();
 
+const findPath = (type) => {
+  const paths = process.env.PATH.split(":");
+  let found = false;
+  paths.forEach((path) => {
+    const commandPath = path + "/" + type;
+    if (!found && fs.existsSync(commandPath)) {
+      console.log(`${type} is ${commandPath}`);
+      found = true;
+    }
+  });
+  if (!found) {
+    console.log(`${type}: command not found`);
+  }
+}
 const checkType = (input) => {
   const type = input.split(" ")[1];
-  if (type === 'echo' ||type=== 'exit' ||type=== 'type') {
+  if (type === 'echo' || type === 'exit' || type === 'type') {
     console.log(`${type} is a shell builtin`);
     rl.prompt();
   } else {
-    console.log(`${type}: not found`);
+    findPath(type);
     rl.prompt();
   }
 }
@@ -30,7 +44,7 @@ rl.on("line", (input) => {
   else if (input.startsWith("exit")) {
     //If the input starts with exit, the program will exit
     exit(0)
-    
+
   }
   //Implementing the Echo command
   else if (input.includes("echo")) {
