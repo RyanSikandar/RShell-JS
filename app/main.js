@@ -30,6 +30,7 @@ rl.on("line", (input) => {
   else if (input.startsWith("exit")) {
     //If the input starts with exit, the program will exit
     exit(0)
+    
   }
   //Implementing the Echo command
   else if (input.includes("echo")) {
