@@ -15,6 +15,14 @@ const home = process.env.HOME;
 //using prompt to display the prompt message
 rl.prompt();
 
+//Function to handle Echo command
+function handleEcho(input) {
+  const echo = input.split(" ");
+  const value = echo.slice(1).join(" ");
+  const myStr = value.replace(/'/g, '');
+  console.log(myStr);
+}
+
 //Function to change the directory
 function changeDirectory(path) {
   try {
@@ -102,8 +110,8 @@ rl.on("line", (input) => {
   }
   //Implementing the Echo command
   else if (input.includes("echo")) {
-    //The echo command will print the input without the echo
-    console.log(input.replace("echo", "").trim());
+    //The echo command will print the input without the echo    
+    handleEcho(input);
     rl.prompt();
   }
   else {
@@ -112,4 +120,3 @@ rl.on("line", (input) => {
     rl.prompt();
   }
 })
-
