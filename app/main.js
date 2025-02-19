@@ -58,8 +58,13 @@ const types = ['echo', 'exit', 'type','pwd'];
 const checkType = (input) => {
   const type = input.split(" ")[1];
   if (types.includes(type)) {
-    console.log(`${type} is a shell builtin`);
-    rl.prompt();
+    if (type === 'pwd') {
+      console.log(`${process.cwd()}`);
+      rl.prompt();
+    }
+    else
+    {console.log(`${type} is a shell builtin`);
+    rl.prompt();}
   } else {
     findPath(type);
     rl.prompt();
