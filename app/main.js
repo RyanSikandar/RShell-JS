@@ -25,7 +25,7 @@ function executeFile(input) {
     if (!valid && fs.existsSync(commandPath) && fs.statSync(commandPath).isFile()) {
       valid = true;
       try {
-        execFileSync(commandPath, args, { encoding: 'utf-8', stdio: 'inherit' });
+        execFileSync(command, args, { encoding: 'utf-8', stdio: 'inherit' });
       } catch (err) {
         console.error(`Error executing ${command}:`, err.message);
       }
