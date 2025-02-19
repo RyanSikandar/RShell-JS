@@ -19,8 +19,14 @@ rl.prompt();
 function handleEcho(input) {
   const echo = input.split(" ");
   const value = echo.slice(1).join(" ");
-  const myStr = value.replace(/'/g, '');
-  
+  let myStr = ""
+  if (value.startsWith("'") && value.endsWith("'")) {
+    myStr=value.replace(/'/g, '');
+  }
+  else{
+    myStr = value.split(" ").filter((word) => word !== "").join(" ");
+  }
+
   console.log(myStr);
 }
 
