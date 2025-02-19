@@ -47,6 +47,7 @@ function changeDirectory(path) {
 function executeFile(input) {
   const command = input.split(/\s+/)[0];
   const args = input.match(/'[^']*'|"[^"]*"|\S+/g)?.map(arg => arg.replace(/^['"]|['"]$/g, '')) || [];
+  
   const path = process.env.PATH.split(":");
   let valid = false;
 
