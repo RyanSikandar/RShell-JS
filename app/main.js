@@ -20,6 +20,7 @@ function handleEcho(input) {
   const echo = input.split(" ");
   const value = echo.slice(1).join(" ");
   const myStr = value.replace(/'/g, '');
+  
   console.log(myStr);
 }
 
