@@ -54,7 +54,7 @@ const findPath = (type) => {
 }
 
 //Function to check the type of the command and print the result
-const types = ['echo', 'exit', 'type'];
+const types = ['echo', 'exit', 'type','pwd'];
 const checkType = (input) => {
   const type = input.split(" ")[1];
   if (types.includes(type)) {
