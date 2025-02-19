@@ -1,4 +1,4 @@
-const { exit } = require("process");
+const { exit, chdir} = require("process");
 const readline = require("readline");
 const fs = require("fs");
 const { execFileSync } = require("child_process");
@@ -13,12 +13,25 @@ const rl = readline.createInterface({
 //using prompt to display the prompt message
 rl.prompt();
 
-//Function to execute the executable file 
+//Function to execute the executable file (eg: ls, cat, etc)
 function executeFile(input) {
   const command = input.split(" ")[0];
   const args = input.split(" ").slice(1);
   const path = process.env.PATH.split(":");
   let valid = false;
+
+  if (command==="cd"){
+    const path = args[0];
+    try{
+      chdir(path);
+      valid = true;
+      return;
+    }
+    catch(err){
+      console.error(`cd: ${path}: No such file or directory`);
+      return;
+    }
+  }
 
   path.forEach((path) => {
     const commandPath = path + "/" + command;
@@ -54,7 +67,7 @@ const findPath = (type) => {
 }
 
 //Function to check the type of the command and print the result
-const types = ['echo', 'exit', 'type','pwd'];
+const types = ['echo', 'exit', 'type', 'pwd', 'cd'];
 const checkType = (input) => {
   const type = input.split(" ")[1];
   if (types.includes(type)) {
@@ -72,6 +85,7 @@ rl.on("line", (input) => {
     checkType(input);
   }
   else if (input.startsWith("pwd")) {
+    //Prints the current working directory for the process
     console.log(process.cwd());
     rl.prompt();
   }
