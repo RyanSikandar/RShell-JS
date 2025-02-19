@@ -22,7 +22,7 @@ const findPath = (type) => {
     }
   });
   if (!found) {
-    console.log(`${type}: command not found`);
+    console.log(`${type}: not found`);
   }
 }
 const checkType = (input) => {
