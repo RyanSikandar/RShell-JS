@@ -17,17 +17,15 @@ rl.prompt();
 function executeFile(input) {
  const command = input.split(" ")[0];
   const args = input.split(" ").slice(1);
-  exec(`${command} ${args.join(" ")}`, (error, stdout, stderr) => {
+  exec(`${command} ${args.join(" ")}`, (error, stdout) => {
     if (error) {
-      console.log(`error: ${error.message}`);
-      return;
+      console.log(`${command}: not found`);
+      rl.prompt();
+    }else{
+      console.log(stdout);
+      rl.prompt();
     }
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      return;
-    }
-    console.log(stdout);
-    rl.prompt();
+   
   });
 }
 
