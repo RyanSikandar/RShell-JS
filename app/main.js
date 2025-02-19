@@ -31,7 +31,6 @@ function executeFile(input) {
       }
     }
   });
-
   if (!valid) {
     console.log(`${command}: command not found`);
   }
@@ -84,6 +83,7 @@ rl.on("line", (input) => {
     rl.prompt();
   }
   else {
+    //Executes the file input that we have given the shell. Detects if it is a wrong input as well.
     executeFile(input);
     rl.prompt();
   }
