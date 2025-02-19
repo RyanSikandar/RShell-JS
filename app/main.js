@@ -30,6 +30,15 @@ function handleEcho(input) {
   console.log(myStr);
 }
 
+
+
+function parseCommand(command) {
+  const match = command.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
+  const cmd = match[0];
+  const args = match.slice(1).map(arg => arg.replace(/^"|"$/g, "")); 
+  return { cmd, args };
+}
+
 //Function to change the directory
 function changeDirectory(path) {
   try {
@@ -42,11 +51,10 @@ function changeDirectory(path) {
     console.error(`cd: ${path}: No such file or directory`);
   }
 }
+
 //Function to execute the executable file (eg: ls, cat, etc)
 function executeFile(input) {
-  
-  const command = input.split(" ")[0];
-  const args = input.split(" ").slice(1);
+  const { cmd: command, args } = parseCommand(input);
   const path = process.env.PATH.split(":");
   let valid = false;
 
