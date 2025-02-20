@@ -17,8 +17,11 @@ rl.prompt();
 
 //Function to handle Echo command
 function handleEcho(input) {
-  const [command, ...args] = input.match(/'[^']*'|"[^"]*"|\S+/g)?.map(arg => arg.replace(/^['"]|['"]$/g, '')) || [];
-  console.log(args.join(" "));
+  const [command, ...args] = input.match(/(?:'[^']*'|"[^"]*"|\S)+/g)
+  ?.map(arg => arg.replace(/^['"]|['"]$/g, '')) || [];
+
+console.log(args.join(' '));
+
 }
 
 //Function to change the directory
