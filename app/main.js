@@ -17,11 +17,58 @@ rl.prompt();
 
 //Function to handle Echo command
 function handleEcho(input) {
-  const [command, ...args] = input.match(/(?:'[^']*'|"[^"]*"|\S)+/g)
-  ?.map(arg => arg.replace(/^['"]|['"]$/g, '')) || [];
+  //contains the input
+  let args = [];
+  //Contains the current word 
+  let currentArg = '';
 
-console.log(args.join(' '));
+  let inSingleQuotes = false;
 
+  let inDoubleQuotes = false;
+
+  for (let i = 0; i < input.length; i++) {
+//Handling each character in the input
+    const char = input[i];
+    
+    if (char === '"' && !inSingleQuotes) {
+
+      inDoubleQuotes = !inDoubleQuotes;
+
+    } else if (char === "'" && !inDoubleQuotes) {
+
+      inSingleQuotes = !inSingleQuotes;
+
+    } else if (char === ' ' && !inSingleQuotes && !inDoubleQuotes) {
+      //If we approach the end of word we treat it as a space
+      if (currentArg.length > 0) {
+        args.push(currentArg);
+
+        currentArg = '';
+
+      }
+
+    } else {
+      //If the character is not a space or single or double quote, we add it to the current word
+      currentArg += char;
+
+    }
+
+  }
+
+  //If the current word is not empty, we add it to the args array
+
+  if (currentArg.length > 0) {
+
+    args.push(currentArg);
+
+  }
+
+  let cmd = args[0];
+
+  //Remove the first word from the array
+  args.shift();
+
+  console.log(args.join(' '));
 }
 
 //Function to change the directory
