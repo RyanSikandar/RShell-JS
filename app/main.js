@@ -22,6 +22,7 @@ function handleEcho(input) {
   let myStr = ""
   //Handles Doubles Quotes
   if (value.startsWith('"') && value.endsWith('"')) {
+    myStr = value.split(" ").filter((word) => word !== "").join(" ");
     myStr = value.replace(/"/g, '');
   }
   //Handles Single Quotes
