@@ -17,23 +17,54 @@ rl.prompt();
 
 //Function to handle Echo command
 function handleEcho(input) {
-  const echo = input.split(" ");
-  const value = echo.slice(1).join(" ");
-  let myStr = ""
-  //Handles Doubles Quotes
-  if (value.startsWith('"') && value.endsWith('"')) {
-    myStr = value.split(" ").filter((word) => word !== "").join(" ");
-    myStr = value.replace(/"/g, '');
-  }
-  //Handles Single Quotes
-  else if (value.startsWith("'") && value.endsWith("'")) {
-    myStr = value.replace(/'/g, '');
-  }
-  else {
-    myStr = value.split(" ").filter((word) => word !== "").join(" ");
+  let args = [];
+
+  let currentArg = '';
+
+  let inSingleQuotes = false;
+
+  let inDoubleQuotes = false;
+
+  for (let i = 0; i < input.length; i++) {
+
+    const char = input[i];
+    
+    if (char === '"' && !inSingleQuotes) {
+
+      inDoubleQuotes = !inDoubleQuotes;
+
+    } else if (char === "'" && !inDoubleQuotes) {
+
+      inSingleQuotes = !inSingleQuotes;
+
+    } else if (char === ' ' && !inSingleQuotes && !inDoubleQuotes) {
+      if (currentArg.length > 0) {
+
+        args.push(currentArg);
+
+        currentArg = '';
+
+      }
+
+    } else {
+
+      currentArg += char;
+
+    }
+
   }
 
-  console.log(myStr);
+  if (currentArg.length > 0) {
+
+    args.push(currentArg);
+
+  }
+
+  let cmd = args[0];
+
+  args.shift();
+
+  console.log(args.join(' '));
 }
 
 //Function to change the directory
