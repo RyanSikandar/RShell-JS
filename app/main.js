@@ -20,7 +20,12 @@ function handleEcho(input) {
   const echo = input.split(" ");
   const value = echo.slice(1).join(" ");
   let myStr = ""
-  if (value.startsWith("'") && value.endsWith("'")) {
+  //Handles Doubles Quotes
+  if (value.startsWith('"') && value.endsWith('"')) {
+    myStr = value.replace(/"/g, '');
+  }
+  //Handles Single Quotes
+  else if (value.startsWith("'") && value.endsWith("'")) {
     myStr = value.replace(/'/g, '');
   }
   else {
