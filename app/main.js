@@ -17,8 +17,9 @@ rl.prompt();
 
 //Function to handle Echo command
 function handleEcho(input) {
+  //contains the input
   let args = [];
-
+  //Contains the current word 
   let currentArg = '';
 
   let inSingleQuotes = false;
@@ -26,7 +27,7 @@ function handleEcho(input) {
   let inDoubleQuotes = false;
 
   for (let i = 0; i < input.length; i++) {
-
+//Handling each character in the input
     const char = input[i];
     
     if (char === '"' && !inSingleQuotes) {
@@ -38,8 +39,8 @@ function handleEcho(input) {
       inSingleQuotes = !inSingleQuotes;
 
     } else if (char === ' ' && !inSingleQuotes && !inDoubleQuotes) {
+      //If we approach the end of word we treat it as a space
       if (currentArg.length > 0) {
-
         args.push(currentArg);
 
         currentArg = '';
@@ -47,12 +48,14 @@ function handleEcho(input) {
       }
 
     } else {
-
+      //If the character is not a space or single or double quote, we add it to the current word
       currentArg += char;
 
     }
 
   }
+
+  //If the current word is not empty, we add it to the args array
 
   if (currentArg.length > 0) {
 
@@ -62,6 +65,7 @@ function handleEcho(input) {
 
   let cmd = args[0];
 
+  //Remove the first word from the array
   args.shift();
 
   console.log(args.join(' '));
