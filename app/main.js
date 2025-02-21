@@ -15,6 +15,9 @@ const home = process.env.HOME;
 //using prompt to display the prompt message
 rl.prompt();
 
+//Special Characters 
+const specialCharacters = ['\\', '"', "$","\n"];
+
 //Function to handle Echo command
 function handleEcho(input) {
   //contains the input
@@ -50,7 +53,11 @@ function handleEcho(input) {
     } else {
       //For quoted backslashes
       if (char === '\\' && (inSingleQuotes || inDoubleQuotes)) {
-        if (input[i + 1] === '\\') {
+        if (inDoubleQuotes && specialCharacters.includes(input[i + 1])) {
+          currentArg += input[i + 1];
+          i++;
+        }
+        else if (input[i + 1] === '\\') {
           currentArg += '\\';
           i++;
         }
