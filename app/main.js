@@ -179,7 +179,12 @@ function executeFile(input) {
             // Write stdout to the file (if needed)
             if (redirectOperator !== "2>") {
               if (redirectOperator === ">>" || redirectOperator === "1>>") {
-                fs.appendFileSync(file, output);
+                try{
+                  fs.appendFileSync(file, output);
+                }
+                catch(err){
+                  console.error(`echo: ${file}: No such file or directory`);
+                }
               }
               else {
                 fs.writeFileSync(file, output);
