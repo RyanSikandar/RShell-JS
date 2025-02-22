@@ -92,13 +92,14 @@ function handleEcho(input) {
   //Remove the first word from the array
   args.shift();
   //Handling Redirect Stdout (with >)
-  const redirectIndex = args.indexOf(">");
+  const redirectOperator = args.includes(">") ? ">" : "1>";
+  const redirectIndex = args.indexOf(redirectOperator);
   if (redirectIndex !== -1) {
     const file = args[redirectIndex + 1];
     args = args.slice(0, redirectIndex);
     fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
   }
-  else{
+  else {
     //Print the output if no redirection is present
     console.log(args.join(' '));
   }
