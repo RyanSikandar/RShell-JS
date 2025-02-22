@@ -97,7 +97,12 @@ function handleEcho(input) {
   if (redirectIndex !== -1) {
     const file = args[redirectIndex + 1];
     args = args.slice(0, redirectIndex);
-    fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
+    if (redirectOperator === "2>") {
+      console.error(args.join(' '));
+    }
+    else{
+      fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
+    }
   }
   else {
     //Print the output if no redirection is present
