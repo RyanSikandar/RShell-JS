@@ -96,29 +96,27 @@ function handleEcho(input) {
   let redirectOperator = args.includes("2>") ? "2>" :
     args.includes("1>") ? "1>" :
       args.includes(">") ? ">" : null;
-  if (redirectOperator) {
-    const redirectIndex = args.indexOf(redirectOperator);
-    if (redirectIndex !== -1) {
-      const file = args[redirectIndex + 1];
-      args = args.slice(0, redirectIndex);
-      if (redirectOperator === "2>") {
-        try {
-          // Ensure parent directories exist
-          fs.mkdirSync(path.dirname(file), { recursive: true });
-      
-          // Write error output
-          fs.writeFileSync(file, args.join(' '));
-          process.stderr.write(args.join(' ') + '\n'); // Write to stderr as well
-        } catch (err) {
-          console.error(`echo: ${file}: No such file or directory`);
+      if (redirectOperator) {
+        const redirectIndex = args.indexOf(redirectOperator);
+        if (redirectIndex !== -1) {
+          const file = args[redirectIndex + 1];
+          args = args.slice(0, redirectIndex);
+          if (redirectOperator === "2>") {
+            try {
+              // Ensure parent directories exist
+              fs.mkdirSync(path.dirname(file), { recursive: true });
+          
+              // Write to stderr only, not to the file
+              process.stderr.write(args.join(' ') + '\n');
+            } catch (err) {
+              console.error(`echo: ${file}: No such file or directory`);
+            }
+          } else {
+            // For other redirection operators, write to the file
+            fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
+          }
         }
       }
-      
-      else {
-        fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
-      }
-    }
-  }
   else {
     //Print the output if no redirection is present
     console.log(args.join(' '));
