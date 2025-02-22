@@ -179,6 +179,7 @@ function executeFile(input) {
             // Write stdout to the file (if needed)
             if (redirectOperator !== "2>") {
               if (redirectOperator === ">>" || redirectOperator === "1>>") {
+                fs.mkdirSync(path.dirname(file), { recursive: true });
                 fs.writeFileSync(file, output, { flag: 'a' });
               }
               else {
