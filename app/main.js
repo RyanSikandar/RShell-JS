@@ -172,10 +172,13 @@ function executeFile(input) {
           } catch (err) {
               // If there's an error, handle stdout and stderr separately
               if (err.stdout) {
-      
+                  if (redirectOperator === "2>") {
+                      // Write stdout to the file
+                      process.stderr.write(err.stdout);
+                  }
                   // Write stdout to the file (if needed)
-                  if (redirectOperator !== "2>") {
-                      fs.writeFileSync(file, err.stdout);
+                  else{
+                    fs.writeFileSync(file, err.stdout);
                   }
               }
       
