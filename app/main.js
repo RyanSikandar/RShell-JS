@@ -125,7 +125,8 @@ function executeFile(input) {
 
   const path = process.env.PATH.split(":");
   let valid = false;
-  const redirectIndex = args.indexOf(">");
+  const redirectOperator = args.includes(">") ? ">" : "1>";
+  const redirectIndex = args.indexOf(redirectOperator);
   if (command === "cd") {
     changeDirectory(args[0]);
     return;
