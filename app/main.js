@@ -149,8 +149,8 @@ function executeFile(input) {
           execFileSync(command, args, { encoding: 'utf-8', stdio: 'inherit' });
         }
       } catch (err) {
-        if (err.stderr) {
-          process.stderr.write(err.stderr);
+        if (err) {
+          process.stderr.write(err);
         }
       }
     }
