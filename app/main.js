@@ -89,11 +89,19 @@ function handleEcho(input) {
   }
 
   let cmd = args[0];
-
   //Remove the first word from the array
   args.shift();
-
-  console.log(args.join(' '));
+  //Handling Redirect Stdout (with >)
+  const redirectIndex = args.indexOf(">");
+  if (redirectIndex !== -1) {
+    const file = args[redirectIndex + 1];
+    args = args.slice(0, redirectIndex);
+    fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
+  }
+  else{
+    //Print the output if no redirection is present
+    console.log(args.join(' '));
+  }
 }
 
 //Function to change the directory
@@ -135,7 +143,7 @@ function executeFile(input) {
           // Write the output to the file
           fs.writeFileSync(file, output);
         }
-        else{
+        else {
           execFileSync(command, args, { encoding: 'utf-8', stdio: 'inherit' });
         }
       } catch (err) {
