@@ -179,7 +179,7 @@ function executeFile(input) {
             // Write stdout to the file (if needed)
             if (redirectOperator !== "2>") {
               if (redirectOperator === ">>" || redirectOperator === "1>>") {
-                fs.appendFileSync(file, output);
+                fs.writeFileSync(file, output, { flag: 'a' });
               }
               else {
                 fs.writeFileSync(file, output);
@@ -195,7 +195,7 @@ function executeFile(input) {
               // Write stdout to the file (if needed)
               else {
                 if (redirectOperator === ">>" || redirectOperator === "1>>") {
-                  fs.appendFileSync(file, err.stdout);
+                  fs.writeFileSync(file, err.stdout,{ flag: 'a' });
                 }
                 else {
                   fs.writeFileSync(file, err.stdout);
@@ -209,7 +209,7 @@ function executeFile(input) {
                 fs.writeFileSync(file, err.stderr);
               } else if (redirectOperator === "2>>") {
                 // Append stderr to the file
-                fs.appendFileSync(file, err.stderr);
+                fs.writeFileSync(file, err.stderr,{ flag: 'a' });
               }
               else {
                 // Print stderr to the terminal
