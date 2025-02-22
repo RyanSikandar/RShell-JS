@@ -138,25 +138,21 @@ function executeFile(input) {
       valid = true;
       try {
         if (redirectIndex !== -1) {
-          // The file where stdout should be redirected
+          // The file we want to redirect the output to
           const file = args[redirectIndex + 1];
-
-          // Execute command, redirecting only stdout to capture actual output
-          const output = execFileSync(command, args.slice(0, redirectIndex), { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'inherit'] });
-
-          // Write only stdout to the file
+          // The command to execute
+          const output = execFileSync(command, args.slice(0, redirectIndex), { encoding: 'utf-8', stdio: ['ignore','pipe','inherit'] });
+          // Write the output to the file
           fs.writeFileSync(file, output);
-        } else {
-          // Execute normally, inheriting stdio
+        }
+        else {
           execFileSync(command, args, { encoding: 'utf-8', stdio: 'inherit' });
         }
       } catch (err) {
-        // Print only the error message as expected
         if (err.stderr) {
           process.stderr.write(err.stderr);
         }
       }
-
     }
   });
   if (!valid) {
