@@ -105,7 +105,7 @@ function handleEcho(input) {
             try {
               // Ensure parent directories exist
               fs.mkdirSync(path.dirname(file), { recursive: true });
-          
+              fs.writeFileSync(file, '');
               // Write to stderr only, not to the file
               process.stderr.write(args.join(' ') + '\n');
             } catch (err) {
