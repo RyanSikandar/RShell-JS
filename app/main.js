@@ -145,7 +145,7 @@ function changeDirectory(path) {
 }
 
 //Function to execute the executable file (eg: ls, cat, etc)
-ffunction executeFile(input) {
+function executeFile(input) {
   const [command, ...args] = input.match(/'[^']*'|"[^"]*"|\S+/g)?.map(arg => arg.replace(/^['"]|['"]$/g, '')) || [];
   const path = process.env.PATH.split(":");
   let valid = false;
