@@ -107,7 +107,7 @@ function handleEcho(input) {
           fs.mkdirSync(path.dirname(file), { recursive: true });
       
           // Write error output
-          fs.writeFileSync(file, args.join(' '));
+
           process.stderr.write(args.join(' ') + '\n'); // Write to stderr as well
         } catch (err) {
           console.error(`echo: ${file}: No such file or directory`);
