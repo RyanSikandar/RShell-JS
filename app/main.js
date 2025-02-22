@@ -142,7 +142,7 @@ function executeFile(input) {
           const file = args[redirectIndex + 1];
 
           // Execute command, redirecting only stdout to capture actual output
-          const output = execFileSync(command, args.slice(0, redirectIndex), { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'inherit'] });
+          const output = execFileSync(command, args.slice(0, redirectIndex), { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] });
 
           // Write only stdout to the file (stderr remains in console)
           fs.writeFileSync(file, output);
