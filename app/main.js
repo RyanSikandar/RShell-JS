@@ -98,9 +98,14 @@ function handleEcho(input) {
     const file = args[redirectIndex + 1];
     args = args.slice(0, redirectIndex);
     if (redirectOperator === "2>") {
-      console.error(args.join(' '));
+     if (fs.existsSync(file)){
+      console.error(`${args.join(' ')}`);
+     }
+     else{
+      console.error(`echo: ${file}: No such file or directory`);
+     }
     }
-    else{
+    else {
       fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
     }
   }
