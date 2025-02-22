@@ -179,12 +179,7 @@ function executeFile(input) {
             // Write stdout to the file (if needed)
             if (redirectOperator !== "2>") {
               if (redirectOperator === ">>" || redirectOperator === "1>>") {
-                try{
-                  fs.appendFileSync(file, output);
-                }
-                catch(err){
-                  console.error(`echo: ${file}: No such file or directory`);
-                }
+                fs.appendFileSync(file, output);
               }
               else {
                 fs.writeFileSync(file, output);
@@ -212,9 +207,13 @@ function executeFile(input) {
                 // Write stderr to the file
                 fs.writeFileSync(file, err.stderr);
               } else {
+                if (redirectOperator === ">>" || redirectOperator === "1>>") {
+                  process.stderr.write(err.stderr);
+                }
+                else {
                 // Print stderr to the terminal
                 process.stderr.write(err.stderr);
-              }
+              }}
             }
           }
         } else {
