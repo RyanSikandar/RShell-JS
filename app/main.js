@@ -187,7 +187,6 @@ function executeFile(input) {
               }
             }
           } catch (err) {
-            console.error(`this ${command}: ${err.message} this`);
             // If there's an error, handle stdout and stderr separately
             if (err.stdout) {
               if (redirectOperator === "2>") {
@@ -216,7 +215,7 @@ function executeFile(input) {
                 // Print stderr to the terminal
                 if (redirectOperator === ">>" || redirectOperator === "1>>") {
                   try {
-                    fs.appendFileSync(file, err.stderr);
+                    fs.appendFileSync(file, "");
                   }
                   catch (err) {
                     process.stderr.write(err.stderr);
