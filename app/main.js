@@ -141,7 +141,7 @@ function executeFile(input) {
           // The file we want to redirect the output to
           const file = args[redirectIndex + 1];
           // The command to execute
-          const output = execFileSync(command, args.slice(0, redirectIndex), { encoding: 'utf-8' });
+          const output = execFileSync(command, args.slice(0, redirectIndex), { encoding: 'utf-8', stdio: ['ignore','pipe','pipe'] });
           // Write the output to the file
           fs.writeFileSync(file, output);
         }
@@ -149,7 +149,9 @@ function executeFile(input) {
           execFileSync(command, args, { encoding: 'utf-8', stdio: 'inherit' });
         }
       } catch (err) {
-        console.error(`Error executing ${command}:`, err.message);
+        if (err.stderr){
+          process.stderr.write(err.stderr);
+        }
       }
     }
   });
