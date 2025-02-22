@@ -93,7 +93,7 @@ function handleEcho(input) {
   //Remove the first word from the array
   args.shift();
   //Handling Redirect Stdout (with >)
-  let redirectOperator = args.includes("2>") ? "2>" : args.includes("2>>") ? "2>>" :
+  let redirectOperator = args.includes("2>") ? "2>" :
     args.includes("1>") ? "1>" :
       args.includes(">") ? ">" : args.includes(">>") ? ">>" : args.includes("1>>") ? "1>>" : null;
 
@@ -102,7 +102,7 @@ function handleEcho(input) {
     if (redirectIndex !== -1) {
       const file = args[redirectIndex + 1];
       args = args.slice(0, redirectIndex);
-      if (redirectOperator === "2>" || redirectOperator === "2>>") {
+      if (redirectOperator === "2>") {
         try {
           // Ensure parent directories exist
           fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -147,9 +147,11 @@ function changeDirectory(path) {
 //Function to execute the executable file (eg: ls, cat, etc)
 function executeFile(input) {
   const [command, ...args] = input.match(/'[^']*'|"[^"]*"|\S+/g)?.map(arg => arg.replace(/^['"]|['"]$/g, '')) || [];
+  //Handling redirect stdout (with >)
+
   const path = process.env.PATH.split(":");
   let valid = false;
-  let redirectOperator = args.includes("2>") ? "2>" : args.includes("2>>") ? "2>>" :
+  let redirectOperator = args.includes("2>") ? "2>" :
     args.includes("1>") ? "1>" :
       args.includes(">") ? ">" : args.includes(">>") ? ">>" : args.includes("1>>") ? "1>>" : null;
 
@@ -167,60 +169,55 @@ function executeFile(input) {
         if (redirectIndex !== -1) {
           const file = args[redirectIndex + 1];
 
-          // Ensure the directory exists
-          const dir = path.dirname(file);
-          if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-          }
+          try {
+            // Execute the command and capture both stdout and stderr
+            const output = execFileSync(command, args.slice(0, redirectIndex), {
+              encoding: 'utf-8',
+              stdio: ['ignore', 'pipe', 'pipe'], // Capture stdout and stderr
+            });
 
-          // Execute the command and capture both stdout and stderr
-          const output = execFileSync(command, args.slice(0, redirectIndex), {
-            encoding: 'utf-8',
-            stdio: ['ignore', 'pipe', 'pipe'], // Capture stdout and stderr
-          });
-
-          // Write stdout to the file (if needed)
-          if (redirectOperator !== "2>") {
-            if (redirectOperator === ">>" || redirectOperator === "1>>") {
-              fs.writeFileSync(file, output, { flag: 'a' });
+            // Write stdout to the file (if needed)
+            if (redirectOperator !== "2>") {
+              if (redirectOperator === ">>" || redirectOperator === "1>>") {
+                fs.appendFileSync(file, output);
+              }
+              else {
+                fs.writeFileSync(file, output);
+              }
             }
-            else {
-              fs.writeFileSync(file, output);
+          } catch (err) {
+            // If there's an error, handle stdout and stderr separately
+            if (err.stdout) {
+              if (redirectOperator === "2>") {
+                // Write stdout to the file
+                process.stderr.write(err.stdout);
+              }
+              // Write stdout to the file (if needed)
+              else {
+                if (redirectOperator === ">>" || redirectOperator === "1>>") {
+                  fs.appendFileSync(file, err.stdout);
+                }
+                else {
+                fs.writeFileSync(file, err.stdout);
+              }}
+            }
+
+            if (err.stderr) {
+              if (redirectOperator === "2>") {
+                // Write stderr to the file
+                fs.writeFileSync(file, err.stderr);
+              } else {
+                // Print stderr to the terminal
+                process.stderr.write(err.stderr);
+              }
             }
           }
         } else {
           execFileSync(command, args, { encoding: 'utf-8', stdio: 'inherit' });
         }
       } catch (err) {
-        // If there's an error, handle stdout and stderr separately
-        if (err.stdout) {
-          if (redirectOperator === "2>" || redirectOperator === "2>>") {
-            // Write stdout to the file
-            process.stderr.write(err.stdout);
-          }
-          // Write stdout to the file (if needed)
-          else {
-            if (redirectOperator === ">>" || redirectOperator === "1>>") {
-              fs.writeFileSync(file, err.stdout, { flag: 'a' });
-            }
-            else {
-              fs.writeFileSync(file, err.stdout);
-            }
-          }
-        }
-
         if (err.stderr) {
-          if (redirectOperator === "2>") {
-            // Write stderr to the file
-            fs.writeFileSync(file, err.stderr);
-          } else if (redirectOperator === "2>>") {
-            // Append stderr to the file
-            fs.appendFileSync(file, err.stderr);
-          }
-          else {
-            // Print stderr to the terminal
-            process.stderr.write(err.stderr);
-          }
+          process.stderr.write(err.stderr);
         }
       }
     }
