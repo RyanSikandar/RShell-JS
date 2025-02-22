@@ -172,8 +172,6 @@ function executeFile(input) {
           } catch (err) {
               // If there's an error, handle stdout and stderr separately
               if (err.stdout) {
-                  // Print valid stdout to the terminal
-                  process.stdout.write(err.stdout);
       
                   // Write stdout to the file (if needed)
                   if (redirectOperator !== "2>") {
