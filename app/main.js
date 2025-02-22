@@ -170,6 +170,7 @@ function executeFile(input) {
           const file = args[redirectIndex + 1];
 
           try {
+            fs.mkdirSync(path.dirname(file), { recursive: true });
             // Execute the command and capture both stdout and stderr
             const output = execFileSync(command, args.slice(0, redirectIndex), {
               encoding: 'utf-8',
@@ -179,7 +180,6 @@ function executeFile(input) {
             // Write stdout to the file (if needed)
             if (redirectOperator !== "2>") {
               if (redirectOperator === ">>" || redirectOperator === "1>>") {
-                fs.mkdirSync(path.dirname(file), { recursive: true });
                 fs.writeFileSync(file, output, { flag: 'a' });
               }
               else {
@@ -210,7 +210,7 @@ function executeFile(input) {
                 fs.writeFileSync(file, err.stderr);
               } else if (redirectOperator === "2>>") {
                 // Append stderr to the file
-                fs.writeFileSync(file, err.stderr,{ flag: 'a' });
+                fs.appendFileSync(file, err.stderr);
               }
               else {
                 // Print stderr to the terminal
