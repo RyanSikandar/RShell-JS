@@ -2,7 +2,6 @@ const { exit, chdir } = require("process");
 const readline = require("readline");
 const fs = require("fs");
 const { execFileSync } = require("child_process");
-const path = require("path");
 
 //We are creating an interface for the user
 const rl = readline.createInterface({
@@ -93,21 +92,25 @@ function handleEcho(input) {
   //Remove the first word from the array
   args.shift();
   //Handling Redirect Stdout (with >)
-  const redirectOperator = args.includes(">") ? ">" : args.includes("1>") ? "1>" : "2>";
-  const redirectIndex = args.indexOf(redirectOperator);
-  if (redirectIndex !== -1) {
-    const file = args[redirectIndex + 1];
-    args = args.slice(0, redirectIndex);
-    if (redirectOperator === "2>") {
-      try {
-        fs.writeFileSync(file, args.join(' '));
+  let redirectOperator = args.includes("2>") ? "2>" :
+    args.includes("1>") ? "1>" :
+      args.includes(">") ? ">" : null;
+  if (redirectOperator) {
+    const redirectIndex = args.indexOf(redirectOperator);
+    if (redirectIndex !== -1) {
+      const file = args[redirectIndex + 1];
+      args = args.slice(0, redirectIndex);
+      if (redirectOperator === "2>") {
+        if (fs.existsSync(file)) {
+          console.error(`${args.join(' ')}`);
+        }
+        else {
+          console.error(`echo: ${file}: No such file or directory`);
+        }
       }
-      catch (err) {
-        console.error(`echo: ${file}: No such file or directory`);
+      else {
+        fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
       }
-    }
-    else {
-      fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
     }
   }
   else {
