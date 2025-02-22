@@ -2,6 +2,7 @@ const { exit, chdir } = require("process");
 const readline = require("readline");
 const fs = require("fs");
 const { execFileSync } = require("child_process");
+const path = require("path");
 
 //We are creating an interface for the user
 const rl = readline.createInterface({
