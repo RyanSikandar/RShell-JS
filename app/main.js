@@ -138,21 +138,35 @@ function executeFile(input) {
       valid = true;
       try {
         if (redirectIndex !== -1) {
-          // The file we want to redirect the output to
-          const file = args[redirectIndex + 1];
-          // The command to execute
-          const output = execFileSync(command, args.slice(0, redirectIndex), { encoding: 'utf-8', stdio: ['ignore','pipe','inherit'] });
-          // Write the output to the file
-          fs.writeFileSync(file, output);
+            const file = args[redirectIndex + 1];
+    
+            try {
+                // Capture both stdout and stderr
+                const output = execFileSync(command, args.slice(0, redirectIndex), {
+                    encoding: 'utf-8',
+                    stdio: ['ignore', 'pipe', 'pipe'], // Capture both stdout and stderr
+                });
+    
+                // Write stdout to the file
+                fs.writeFileSync(file, output);
+            } catch (err) {
+                // Even if there's an error, we must still write any captured stdout to the file
+                if (err.stdout) {
+                    fs.writeFileSync(file, err.stdout);
+                }
+                // Print stderr to console (mimic actual behavior of cat)
+                if (err.stderr) {
+                    process.stderr.write(err.stderr);
+                }
+            }
+        } else {
+            execFileSync(command, args, { encoding: 'utf-8', stdio: 'inherit' });
         }
-        else {
-          execFileSync(command, args, { encoding: 'utf-8', stdio: 'inherit' });
-        }
-      } catch (err) {
+    } catch (err) {
         if (err.stderr) {
-          process.stderr.write(err.stderr);
+            process.stderr.write(err.stderr);
         }
-      }
+    }
     }
   });
   if (!valid) {
