@@ -174,12 +174,7 @@ function executeFile(input) {
             }
             // Print stderr to console (mimic actual behavior of cat)
             if (err.stderr) {
-              if (redirectOperator === "2>") {
-                fs.writeFileSync(file, err.stderr);
-              }
-              else {
                 process.stderr.write(err.stderr);
-              }
             }
           }
         } else {
