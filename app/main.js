@@ -116,13 +116,11 @@ function handleEcho(input) {
         // For other redirection operators, write to the file
         // if the file exists, append to it
         if (redirectOperator === ">>" || redirectOperator === "1>>") {
-          fs.mkdirSync(path.dirname(file), { recursive: true });
-          fs.appendFileSync(file, args.join(' ') + '\n');
+          fs.createWriteStream(file, { flags: 'a' }).write(args.join(' ') + '\n');
         }
         else {
           // for write operators, overwrite the file
-          fs.mkdirSync(path.dirname(file), { recursive: true }); // Ensure parent directories exist
-          fs.writeFileSync(file, args.join(' ') + '\n'); // Write output to file
+          fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
         }
       }
     }
@@ -173,6 +171,7 @@ function executeFile(input) {
 
           try {
             // Execute the command and capture both stdout and stderr
+            fs.mkdirSync(require('path').dirname(file), { recursive: true });
             const output = execFileSync(command, args.slice(0, redirectIndex), {
               encoding: 'utf-8',
               stdio: ['ignore', 'pipe', 'pipe'], // Capture stdout and stderr
@@ -188,6 +187,7 @@ function executeFile(input) {
               }
             }
           } catch (err) {
+            console.error(`this ${command}: ${err.message} this`);
             // If there's an error, handle stdout and stderr separately
             if (err.stdout) {
               if (redirectOperator === "2>") {
@@ -197,12 +197,15 @@ function executeFile(input) {
               // Write stdout to the file (if needed)
               else {
                 if (redirectOperator === ">>" || redirectOperator === "1>>") {
-                  fs.appendFileSync(file, err.stdout);
-                }
+                  try {
+                    fs.appendFileSync(file, err.stdout);
+                  }
+                  catch (err) {
+                    process.stderr.write(err.stdout);
+                  } }
                 else {
-                  fs.writeFileSync(file, err.stdout);
-                }
-              }
+                fs.writeFileSync(file, err.stdout);
+              }}
             }
 
             if (err.stderr) {
@@ -211,8 +214,17 @@ function executeFile(input) {
                 fs.writeFileSync(file, err.stderr);
               } else {
                 // Print stderr to the terminal
+                if (redirectOperator === ">>" || redirectOperator === "1>>") {
+                  try {
+                    fs.appendFileSync(file, err.stderr);
+                  }
+                  catch (err) {
+                    process.stderr.write(err.stderr);
+                  }
+                }
+                else {
                 process.stderr.write(err.stderr);
-              }
+              }}
             }
           }
         } else {
