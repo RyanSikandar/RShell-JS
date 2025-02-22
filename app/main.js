@@ -157,32 +157,44 @@ function executeFile(input) {
       try {
         if (redirectIndex !== -1) {
           const file = args[redirectIndex + 1];
-
+      
           try {
-            // Capture both stdout and stderr
-            const output = execFileSync(command, args.slice(0, redirectIndex), {
-              encoding: 'utf-8',
-              stdio: ['ignore', 'pipe', 'pipe'],
-            });
-
-            // Write stdout to the file
-            fs.writeFileSync(file, output);
+              // Execute the command and capture both stdout and stderr
+              const output = execFileSync(command, args.slice(0, redirectIndex), {
+                  encoding: 'utf-8',
+                  stdio: ['ignore', 'pipe', 'pipe'], // Capture stdout and stderr
+              });
+      
+              // Print stdout to the terminal
+              process.stdout.write(output);
+      
+              // Write stdout to the file (if needed)
+              if (redirectOperator !== "2>") {
+                  fs.writeFileSync(file, output);
+              }
           } catch (err) {
-            // Even if there's an error, we must still write any captured stdout to the file (for the valid data we have)
-            if (err.stdout) {
-              fs.writeFileSync(file, err.stdout);
-            }
-            // Print stderr to console (mimic actual behavior of cat)
-            else if (err.stderr) {
-              if (redirectOperator === "2>") {
-                fs.writeFileSync(file, err.stderr);
+              // If there's an error, handle stdout and stderr separately
+              if (err.stdout) {
+                  // Print valid stdout to the terminal
+                  process.stdout.write(err.stdout);
+      
+                  // Write stdout to the file (if needed)
+                  if (redirectOperator !== "2>") {
+                      fs.writeFileSync(file, err.stdout);
+                  }
               }
-              else {
-                process.stderr.write(err.stderr);
+      
+              if (err.stderr) {
+                  if (redirectOperator === "2>") {
+                      // Write stderr to the file
+                      fs.writeFileSync(file, err.stderr);
+                  } else {
+                      // Print stderr to the terminal
+                      process.stderr.write(err.stderr);
+                  }
               }
-            }
           }
-        } else {
+      } else {
           execFileSync(command, args, { encoding: 'utf-8', stdio: 'inherit' });
         }
       } catch (err) {
