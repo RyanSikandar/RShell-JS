@@ -99,12 +99,11 @@ function handleEcho(input) {
     const file = args[redirectIndex + 1];
     args = args.slice(0, redirectIndex);
     if (redirectOperator === "2>") {
-      const dir = path.dirname(file);
-    
-      if (!fs.existsSync(dir)) {
-          console.error(`echo: ${file}: No such file or directory`);
-      } else {
-          console.error(`${args.join(' ')}`);
+      try {
+        fs.writeFileSync(file, args.join(' '));
+      }
+      catch (err) {
+        console.error(`echo: ${file}: No such file or directory`);
       }
     }
     else {
