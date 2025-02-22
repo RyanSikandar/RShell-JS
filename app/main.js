@@ -142,6 +142,7 @@ function executeFile(input) {
           const file = args[redirectIndex + 1];
           // The command to execute
           const output = execFileSync(command, args.slice(0, redirectIndex), { encoding: 'utf-8', stdio: ['ignore','pipe','inherit'] });
+          console.log(output,"output of file");
           // Write the output to the file
           fs.writeFileSync(file, output);
         }
