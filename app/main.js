@@ -164,10 +164,7 @@ function executeFile(input) {
                   encoding: 'utf-8',
                   stdio: ['ignore', 'pipe', 'pipe'], // Capture stdout and stderr
               });
-      
-              // Print stdout to the terminal
-              process.stdout.write(output);
-      
+          
               // Write stdout to the file (if needed)
               if (redirectOperator !== "2>") {
                   fs.writeFileSync(file, output);
