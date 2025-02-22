@@ -2,6 +2,7 @@ const { exit, chdir } = require("process");
 const readline = require("readline");
 const fs = require("fs");
 const { execFileSync } = require("child_process");
+const path = require("path");
 
 //We are creating an interface for the user
 const rl = readline.createInterface({
@@ -101,13 +102,17 @@ function handleEcho(input) {
       const file = args[redirectIndex + 1];
       args = args.slice(0, redirectIndex);
       if (redirectOperator === "2>") {
-        if (fs.existsSync(file)) {
-          console.error(`${args.join(' ')}`);
-        }
-        else {
+        try {
+          // Ensure parent directories exist
+          fs.mkdirSync(path.dirname(file), { recursive: true });
+
+          // Write error output
+          fs.writeFileSync(file, args.join(' ') + '\n');
+        } catch (err) {
           console.error(`echo: ${file}: No such file or directory`);
         }
       }
+
       else {
         fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
       }
