@@ -116,11 +116,13 @@ function handleEcho(input) {
         // For other redirection operators, write to the file
         // if the file exists, append to it
         if (redirectOperator === ">>" || redirectOperator === "1>>") {
-          fs.createWriteStream(file, { flags: 'a' }).write(args.join(' ') + '\n');
+          fs.mkdirSync(path.dirname(file), { recursive: true });
+          fs.appendFileSync(file, args.join(' ') + '\n');
         }
         else {
           // for write operators, overwrite the file
-          fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
+          fs.mkdirSync(path.dirname(file), { recursive: true }); // Ensure parent directories exist
+          fs.writeFileSync(file, args.join(' ') + '\n'); // Write output to file
         }
       }
     }
@@ -147,16 +149,15 @@ function changeDirectory(path) {
 //Function to execute the executable file (eg: ls, cat, etc)
 function executeFile(input) {
   const [command, ...args] = input.match(/'[^']*'|"[^"]*"|\S+/g)?.map(arg => arg.replace(/^['"]|['"]$/g, '')) || [];
+  //Handling redirect stdout (with >)
+
   const path = process.env.PATH.split(":");
   let valid = false;
-
-  // Handle redirection operators
-  const redirectOperator = args.includes("2>") ? "2>" :
+  let redirectOperator = args.includes("2>") ? "2>" :
     args.includes("1>") ? "1>" :
       args.includes(">") ? ">" : args.includes(">>") ? ">>" : args.includes("1>>") ? "1>>" : null;
 
   const redirectIndex = args.indexOf(redirectOperator);
-
   if (command === "cd") {
     changeDirectory(args[0]);
     return;
@@ -170,9 +171,6 @@ function executeFile(input) {
         if (redirectIndex !== -1) {
           const file = args[redirectIndex + 1];
 
-          // Ensure the directory exists before writing to the file
-          fs.mkdirSync(path.dirname(file), { recursive: true });
-
           try {
             // Execute the command and capture both stdout and stderr
             const output = execFileSync(command, args.slice(0, redirectIndex), {
@@ -180,45 +178,53 @@ function executeFile(input) {
               stdio: ['ignore', 'pipe', 'pipe'], // Capture stdout and stderr
             });
 
-            // Append both stdout and stderr to the file for `>>` or `1>>`
-            if (redirectOperator === ">>" || redirectOperator === "1>>") {
-              fs.appendFileSync(file, output);
-            }
-            // Overwrite the file for `>` or `1>`
-            else if (redirectOperator === ">" || redirectOperator === "1>") {
-              fs.writeFileSync(file, output);
-            }
-            // Handle stderr redirection (`2>` or `2>>`)
-            else if (redirectOperator === "2>" || redirectOperator === "2>>") {
-              fs.appendFileSync(file, output.stderr || output); // Append stderr to the file
+            // Write stdout to the file (if needed)
+            if (redirectOperator !== "2>") {
+              if (redirectOperator === ">>" || redirectOperator === "1>>") {
+                fs.appendFileSync(file, output);
+              }
+              else {
+                fs.writeFileSync(file, output);
+              }
             }
           } catch (err) {
-            // If there's an error, append stderr to the file for `>>` or `1>>`
-            if (redirectOperator === ">>" || redirectOperator === "1>>") {
-              fs.appendFileSync(file, err.stderr || err.message);
+            // If there's an error, handle stdout and stderr separately
+            if (err.stdout) {
+              if (redirectOperator === "2>") {
+                // Write stdout to the file
+                process.stderr.write(err.stdout);
+              }
+              // Write stdout to the file (if needed)
+              else {
+                if (redirectOperator === ">>" || redirectOperator === "1>>") {
+                  fs.appendFileSync(file, err.stdout);
+                }
+                else {
+                  fs.writeFileSync(file, err.stdout);
+                }
+              }
             }
-            // Overwrite the file for `>` or `1>`
-            else if (redirectOperator === ">" || redirectOperator === "1>") {
-              fs.writeFileSync(file, err.stderr || err.message);
-            }
-            // Handle stderr redirection (`2>` or `2>>`)
-            else if (redirectOperator === "2>" || redirectOperator === "2>>") {
-              fs.appendFileSync(file, err.stderr || err.message); // Append stderr to the file
+
+            if (err.stderr) {
+              if (redirectOperator === "2>") {
+                // Write stderr to the file
+                fs.writeFileSync(file, err.stderr);
+              } else {
+                // Print stderr to the terminal
+                process.stderr.write(err.stderr);
+              }
             }
           }
         } else {
-          // No redirection, just execute the command
           execFileSync(command, args, { encoding: 'utf-8', stdio: 'inherit' });
         }
       } catch (err) {
-        // If there's an error and no redirection, print stderr to the terminal
         if (err.stderr) {
           process.stderr.write(err.stderr);
         }
       }
     }
   });
-
   if (!valid) {
     console.log(`${command}: command not found`);
   }
