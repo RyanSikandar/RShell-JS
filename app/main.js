@@ -198,6 +198,7 @@ function executeFile(input) {
                 if (redirectOperator === ">>" || redirectOperator === "1>>") {
                   try {
                     fs.appendFileSync(file, err.stdout);
+                    process.stderr.write(err.stdout);
                   }
                   catch (err) {
                     process.stderr.write(err.stdout);
