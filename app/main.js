@@ -93,7 +93,7 @@ function handleEcho(input) {
   //Remove the first word from the array
   args.shift();
   //Handling Redirect Stdout (with >)
-  let redirectOperator = args.includes("2>") ? "2>" :
+  let redirectOperator = args.includes("2>") ? "2>" : args.includes("2>>") ? "2>>" :
     args.includes("1>") ? "1>" :
       args.includes(">") ? ">" : args.includes(">>") ? ">>" : args.includes("1>>") ? "1>>" : null;
 
@@ -102,7 +102,7 @@ function handleEcho(input) {
     if (redirectIndex !== -1) {
       const file = args[redirectIndex + 1];
       args = args.slice(0, redirectIndex);
-      if (redirectOperator === "2>") {
+      if (redirectOperator === "2>" || redirectOperator === "2>>") {
         try {
           // Ensure parent directories exist
           fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -151,7 +151,7 @@ function executeFile(input) {
 
   const path = process.env.PATH.split(":");
   let valid = false;
-  let redirectOperator = args.includes("2>") ? "2>" :
+  let redirectOperator = args.includes("2>") ? "2>" : args.includes("2>>") ? "2>>" :
     args.includes("1>") ? "1>" :
       args.includes(">") ? ">" : args.includes(">>") ? ">>" : args.includes("1>>") ? "1>>" : null;
 
@@ -188,7 +188,7 @@ function executeFile(input) {
           } catch (err) {
             // If there's an error, handle stdout and stderr separately
             if (err.stdout) {
-              if (redirectOperator === "2>") {
+              if (redirectOperator === "2>" || redirectOperator === "2>>") {
                 // Write stdout to the file
                 process.stderr.write(err.stdout);
               }
@@ -198,15 +198,20 @@ function executeFile(input) {
                   fs.appendFileSync(file, err.stdout);
                 }
                 else {
-                fs.writeFileSync(file, err.stdout);
-              }}
+                  fs.writeFileSync(file, err.stdout);
+                }
+              }
             }
 
             if (err.stderr) {
               if (redirectOperator === "2>") {
                 // Write stderr to the file
                 fs.writeFileSync(file, err.stderr);
-              } else {
+              } else if (redirectOperator === "2>>") {
+                // Append stderr to the file
+                fs.appendFileSync(file, err.stderr);
+              }
+              else {
                 // Print stderr to the terminal
                 process.stderr.write(err.stderr);
               }
