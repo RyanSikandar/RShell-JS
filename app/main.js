@@ -141,7 +141,7 @@ function executeFile(input) {
           // The file we want to redirect the output to
           const file = args[redirectIndex + 1];
           // The command to execute
-          const output = execFileSync(command, args.slice(0, redirectIndex), { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'pipe'] });
+          const output = execFileSync(command, args.slice(0, redirectIndex), { encoding: 'utf-8', stdio: ['pipe'] });
           // Write the output to the file
           fs.writeFileSync(file, output);
         }
