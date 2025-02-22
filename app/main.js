@@ -105,10 +105,14 @@ function handleEcho(input) {
         try {
           // Ensure parent directories exist
           fs.mkdirSync(path.dirname(file), { recursive: true });
+      
+          // Write error output
+          fs.writeFileSync(file, "");
         } catch (err) {
-          fs.writeFileSync(file, `echo: ${file}: No such file or directory\n`);        }
+          console.error(`echo: ${file}: No such file or directory`);
+        }
       }
-
+      
       else {
         fs.createWriteStream(file, { flags: 'w' }).write(args.join(' ') + '\n');
       }
