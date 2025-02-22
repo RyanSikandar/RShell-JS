@@ -179,6 +179,7 @@ function executeFile(input) {
             // Write stdout to the file (if needed)
             if (redirectOperator !== "2>") {
               if (redirectOperator === ">>" || redirectOperator === "1>>") {
+                fs.mkdirSync(path.dirname(file), { recursive: true });
                 fs.appendFileSync(file, output);
               }
               else {
@@ -195,6 +196,7 @@ function executeFile(input) {
               // Write stdout to the file (if needed)
               else {
                 if (redirectOperator === ">>" || redirectOperator === "1>>") {
+                  fs.mkdirSync(path.dirname(file), { recursive: true });
                   fs.appendFileSync(file, err.stdout);
                 }
                 else {
@@ -208,6 +210,7 @@ function executeFile(input) {
                 fs.writeFileSync(file, err.stderr);
               } else {
                 if (redirectOperator === ">>" || redirectOperator === "1>>") {
+                  fs.mkdirSync(path.dirname(file), { recursive: true });
                   process.stderr.write(err.stderr);
                 }
                 else {
