@@ -10,10 +10,25 @@ const rl = readline.createInterface({
   output: process.stdout,
   prompt: "$ ",
   completer: (line) => {
-    const completions = ['echo', 'exit', 'type', 'pwd', 'cd'];
-    const hits = completions.filter((c) => c.startsWith(line));
+    const builtIn = ['echo', 'exit', 'type', 'pwd', 'cd'];
+    const hits = builtIn.filter((c) => c.startsWith(line));
 
+    //Attempt to autocomplete the executable file
+    const mainPath = process.env.PATH.split(":");
+    mainPath.forEach((path) => {
+      const files = fs.readdirSync(path);
+      files.forEach((file) => {
+        if (file.startsWith(line)) {
+          hits.push(file);
+        }
+      }
+      );
+    });
+
+    //If no file found and not builtin
     if (hits.length === 0) {
+      //Attempt to autocomplete the executable file
+      // Beep if no completion found
       process.stdout.write(`\x07`);
       return [[], line];
     }
