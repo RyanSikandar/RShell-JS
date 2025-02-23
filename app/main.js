@@ -12,9 +12,14 @@ const rl = readline.createInterface({
   completer: (line) => {
     const completions = ['echo', 'exit', 'type', 'pwd', 'cd'];
     const hits = completions.filter((c) => c.startsWith(line));
+
+    if (hits.length === 0) {
+      process.stdout.write(`\x07`);
+      return [[], line];
+    }
     // Show all completions if none found. 
     //We have line to tell the readline module that we are not done with the input
-    return [hits.length ? hits.map(h => h + " ") : completions, line];
+    return [hits.map(h => h + " "), line];
   }
 });
 
