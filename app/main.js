@@ -25,7 +25,7 @@ function completer(line) {
         if (file.startsWith(line) && !externalCompletes.includes(file)) {
           const fullPath = path.join(dir, file);
           try {
-            fs.accessSync(fullPath, constants.X_OK);
+            fs.accessSync(fullPath, fs.constants.X_OK);
             externalCompletes.push(file);
           } catch (err) {
             console.error(err,"error 1");
