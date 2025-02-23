@@ -9,49 +9,41 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
   prompt: "$ ",
-  completer: (line) => {
-    const builtIn = ['echo', 'exit', 'type', 'pwd', 'cd'];
-    const hits = builtIn.filter((c) => c.startsWith(line));
+  completer: completer
+});
 
-    //Attempt to autocomplete the executable file
-    const mainPath = process.env.PATH.split(":");
-    const externalCompletions = [];
-    mainPath.forEach((path) => {
-      try {
-        const files = fs.readdirSync(path);
-        files.forEach((file) => {
-          if (file.startsWith(line) && !externalCompletions.includes(file)) {
-            const fullpath = path + "/" + file;
-            try{
-              fs.accessSync(fullpath, fs.constants.X_OK);
-              externalCompletions.push(file);
-            }
-            catch(err){
-              //Do nothing
-            }
+function completer(line) {
+  const builtInCompletes = ['echo', 'exit'];
+  let completions = builtInCompletes.filter(c => c.startsWith(line));
+
+  const pathDirs = process.env.PATH.split(":");
+  let externalCompletes = [];
+  for (const dir of pathDirs) {
+    try {
+      const files = fs.readdirSync(dir);
+      for (const file of files) {
+        if (file.startsWith(line) && !externalCompletes.includes(file)) {
+          const fullPath = join(dir, file);
+          try {
+            accessSync(fullPath, constants.X_OK);
+            externalCompletes.push(file);
+          } catch (err) {
           }
         }
-        );
       }
-      catch (err) {
-        console.error(err);
-      }
-    });
-
-    hits.push(...externalCompletions);
-
-    //If no file found and not builtin
-    if (hits.length === 0) {
-      //Attempt to autocomplete the executable file
-      // Beep if no completion found
-      process.stdout.write(`\x07`);
-      return [[], line];
+    } catch (err) {
     }
-    // Show all completions if none found. 
-    //We have line to tell the readline module that we are not done with the input
-    return [hits.map(h => h + " "), line];
   }
-});
+  
+  completions = completions.concat(externalCompletes);
+  
+  if (completions.length === 0) {
+    process.stdout.write("\x07");
+    return [[], line];
+  }
+  
+  return [completions.map(c => c + " "), line];
+}
 
 const home = process.env.HOME;
 
