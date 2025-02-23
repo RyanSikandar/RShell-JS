@@ -14,7 +14,7 @@ const rl = readline.createInterface({
     const hits = completions.filter((c) => c.startsWith(line));
     // Show all completions if none found. 
     //We have line to tell the readline module that we are not done with the input
-    return [hits.length ? hits : completions, line];
+    return [hits.length ? hits.map(h => h + " ") : completions, line];
   }
 });
 
@@ -158,7 +158,7 @@ function executeFile(input) {
 
   const path = process.env.PATH.split(":");
   let valid = false;
-  let redirectOperator = args.includes("2>") ? "2>" :args.includes("2>>") ? "2>>" :
+  let redirectOperator = args.includes("2>") ? "2>" : args.includes("2>>") ? "2>>" :
     args.includes("1>") ? "1>" :
       args.includes(">") ? ">" : args.includes(">>") ? ">>" : args.includes("1>>") ? "1>>" : null;
 
@@ -220,10 +220,10 @@ function executeFile(input) {
               if (redirectOperator === "2>") {
                 // Write stderr to the file
                 fs.writeFileSync(file, err.stderr);
-              }else if (redirectOperator === "2>>") {
+              } else if (redirectOperator === "2>>") {
                 // Append stderr to the file
                 fs.appendFileSync(file, err.stderr);
-              } 
+              }
               else {
                 // Print stderr to the terminal
                 if (redirectOperator === ">>" || redirectOperator === "1>>") {
