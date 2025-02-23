@@ -16,6 +16,7 @@ function completer(line) {
   const builtInCompletes = ['echo', 'exit'];
   let completions = builtInCompletes.filter(c => c.startsWith(line));
 
+  //Attempt to check if the input is a file in the PATH
   const pathDirs = process.env.PATH.split(":");
   let externalCompletes = [];
   for (const dir of pathDirs) {
@@ -23,8 +24,10 @@ function completer(line) {
       const files = fs.readdirSync(dir);
       for (const file of files) {
         if (file.startsWith(line) && !externalCompletes.includes(file)) {
+          //Complete path of the file
           const fullPath = path.join(dir, file);
           try {
+            // Tries to access the file to check if it is executable
             fs.accessSync(fullPath, fs.constants.X_OK);
             externalCompletes.push(file);
           } catch (err) {
@@ -37,6 +40,7 @@ function completer(line) {
   
   completions = completions.concat(externalCompletes);
   
+  //If no completions we send beeeppppp
   if (completions.length === 0) {
     process.stdout.write("\x07");
     return [[], line];
