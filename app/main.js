@@ -28,13 +28,10 @@ function completer(line) {
             fs.accessSync(fullPath, fs.constants.X_OK);
             externalCompletes.push(file);
           } catch (err) {
-            console.error(err,"error 1");
           }
         }
       }
     } catch (err) {
-      console.error(err,"error 2");
-
     }
   }
   
