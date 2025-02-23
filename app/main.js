@@ -9,6 +9,13 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
   prompt: "$ ",
+  completer: (line) => {
+    const completions = ['echo', 'exit', 'type', 'pwd', 'cd'];
+    const hits = completions.filter((c) => c.startsWith(line));
+    // Show all completions if none found. 
+    //We have line to tell the readline module that we are not done with the input
+    return [hits.length ? hits : completions, line];
+  }
 });
 
 const home = process.env.HOME;
