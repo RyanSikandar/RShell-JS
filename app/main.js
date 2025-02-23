@@ -17,8 +17,9 @@ function completer(line) {
   let completions = builtInCompletes.filter(c => c.startsWith(line));
 
   const pathDirs = process.env.PATH.split(":");
+  console.log(pathDirs);
   let externalCompletes = [];
-  for (const dir of pathDirs) {
+  pathDirs.forEach((dir) => {
     try {
       const files = fs.readdirSync(dir);
       for (const file of files) {
@@ -28,20 +29,22 @@ function completer(line) {
             fs.accessSync(fullPath, constants.X_OK);
             externalCompletes.push(file);
           } catch (err) {
+            process.stderr.write(err.message + "\n");
           }
         }
       }
     } catch (err) {
+      process.stderr.write(err.message + "\n");
     }
-  }
-  
+  });
+
   completions = completions.concat(externalCompletes);
-  
+
   if (completions.length === 0) {
     process.stdout.write("\x07");
     return [[], line];
   }
-  
+
   return [completions.map(c => c + " "), line];
 }
 
