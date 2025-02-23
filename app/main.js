@@ -23,9 +23,9 @@ function completer(line) {
       const files = fs.readdirSync(dir);
       for (const file of files) {
         if (file.startsWith(line) && !externalCompletes.includes(file)) {
-          const fullPath = join(dir, file);
+          const fullPath = path.join(dir, file);
           try {
-            accessSync(fullPath, constants.X_OK);
+            fs.accessSync(fullPath, constants.X_OK);
             externalCompletes.push(file);
           } catch (err) {
           }
