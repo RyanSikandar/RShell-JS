@@ -15,15 +15,30 @@ const rl = readline.createInterface({
 
     //Attempt to autocomplete the executable file
     const mainPath = process.env.PATH.split(":");
+    const externalCompletions = [];
     mainPath.forEach((path) => {
-      const files = fs.readdirSync(path);
-      files.forEach((file) => {
-        if (file.startsWith(line)) {
-          hits.push(file);
+      try {
+        const files = fs.readdirSync(path);
+        files.forEach((file) => {
+          if (file.startsWith(line) && !externalCompletions.includes(file)) {
+            const fullpath = path + "/" + file;
+            try{
+              fs.accessSync(fullpath, fs.constants.X_OK);
+              externalCompletions.push(file);
+            }
+            catch(err){
+              //Do nothing
+            }
+          }
         }
+        );
       }
-      );
+      catch (err) {
+        console.error(err);
+      }
     });
+
+    hits.push(...externalCompletions);
 
     //If no file found and not builtin
     if (hits.length === 0) {
