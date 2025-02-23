@@ -18,32 +18,33 @@ function completer(line) {
 
   const pathDirs = process.env.PATH.split(":");
   let externalCompletes = [];
-  pathDirs.forEach((dir) => {
+  for (const dir of pathDirs) {
     try {
       const files = fs.readdirSync(dir);
       for (const file of files) {
         if (file.startsWith(line) && !externalCompletes.includes(file)) {
-          const fullPath = path + "/" + file;
+          const fullPath = path.join(dir, file);
           try {
             fs.accessSync(fullPath, constants.X_OK);
             externalCompletes.push(file);
           } catch (err) {
-            process.stderr.write(err.message + "\n error");
+            console.error(err,"error 1");
           }
         }
       }
     } catch (err) {
-      process.stderr.write(err.message + "\n errro1");
+      console.error(err,"error 2");
+
     }
-  });
-
+  }
+  
   completions = completions.concat(externalCompletes);
-
+  
   if (completions.length === 0) {
     process.stdout.write("\x07");
     return [[], line];
   }
-
+  
   return [completions.map(c => c + " "), line];
 }
 
