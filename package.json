@@ -4,7 +4,8 @@
   "description": "Build your own Shell challenge, from CodeCrafters",
   "main": "main.js",
   "scripts": {
-    "dev": "node app/main.js"
+    "dev": "node app/main.js",
+    "start": "node app/main.js"
   },
   "keywords": [
     "build-your-own-x"
